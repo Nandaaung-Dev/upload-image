@@ -18,17 +18,18 @@ class ImageUploadController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $imageName = time() . '.' . $request->image->extension();
+        // $imageName = time() . '.' . $request->image->extension();
+        $name = $request->file('image')->getClientOriginalName();
+        $extension = $request->file('image')->getClientOriginalExtension();
 
-        $location = storage_path("app/public");
+        $hashName = md5(time());
+        $image_name = $name . $hashName . "." .$extension;
 
+        // $location = storage_path("");
 
-        //Store Image in Public Folder
-        // $request->image->move(storage_path('images'), $imageName); // public/images/file.png
-
-        Storage::put(
-            "$location/$imageName",
-            $request->file('image'),
+        $file_path = $request->file('image')->storeAs(
+            "images",
+            $image_name,
             'public'
         );
 
@@ -39,6 +40,6 @@ class ImageUploadController extends Controller
 
         return back()
             ->with('success', 'You have successfully upload image.')
-            ->with('image', $imageName);
+            ->with('image', $image_name);
     }
 }
