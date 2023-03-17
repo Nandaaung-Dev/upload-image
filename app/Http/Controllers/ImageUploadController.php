@@ -2,37 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Postimage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ImageUploadController extends Controller
 {
-    public function index()
+    public function addImage()
     {
-        return view('imageUpload');
+        return view("add_image");
     }
 
-    public function store(Request $request)
+    public function storeImage(Request $request)
     {
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        $data = new Postimage;
 
-        $extension = $request->file('image')->getClientOriginalExtension();
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $image_name = md5(time()) . '_' . $image->getClientOriginalName();
+            $image->storeAs('public/images', $image_name);
+            $data['image'] = $image_name;
+        }
 
-        $hashName = md5(time());
-        $image_name = $hashName . "." .$extension;
-
-
-        $file_path = $request->file('image')->storeAs(
-            "images",
-            $image_name,
-            'public'
-        );
+        $data->save();
+        return redirect()->route('images.view');
+    }
 
 
-        return back()
-            ->with('success', 'You have successfully upload image.')
-            ->with('image', $image_name);
+    public function viewImage()
+    {
+        $imageData = Postimage::all();
+        return view('view_image', compact('imageData'));
     }
 }

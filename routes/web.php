@@ -18,5 +18,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get("/upload-image", [ImageUploadController::class, 'index']);
-Route::post("/upload-image", [ImageUploadController::class, 'store'])->name('image.store');
+Route::get("/add-image", [ImageUploadController::class, 'addImage'])->name('images.add');
+Route::post("/store-image", [ImageUploadController::class, 'storeImage'])->name('images.store');
+Route::get("/view-image", [ImageUploadController::class, 'viewImage'])->name('images.view');
